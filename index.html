@@ -169,8 +169,8 @@ $('exportClassPdf').onclick=()=>{try{
  if(typeof window.downloadArabicAnalysisPdf!=='function')throw Error('وحدة PDF غير محمّلة');
  const header=[['مديرية التربية',state.meta.directorate],['المؤسسة',state.meta.school],['الأستاذ',state.meta.teacher],['القسم',state.meta.className],['السنة الدراسية',state.meta.schoolYear],['الفصل',state.meta.term]];
  const ranked=state.students.map((st,i)=>({rank:i+1,name:st.name||'دون اسم',avg:average(st),activity:activityGrade(st),test:st.test,exam:st.exam}));
- const rows=ranked.map(r=>`${r.rank} - ${r.name} | المراقبة: ${r.activity===null?'—':r.activity.toFixed(2)} | الفرض: ${r.test===''?'—':r.test} | الاختبار: ${r.exam===''?'—':r.exam} | المعدل: ${r.avg===null?'—':r.avg.toFixed(2)}`);
- return window.downloadArabicAnalysisPdf({subtitle:'كشف نقاط القسم – الفصل '+state.meta.term,header,stats:[['عدد التلاميذ',state.students.length]],bins:[],ranked:[],support:[],report:rows.join('\n'),bar:null,pie:null});
+ const val=v=>v===null||v===undefined||v===''?'—':typeof v==='number'?v.toFixed(2):String(v);
+ return window.downloadArabicAnalysisPdf({subtitle:'كشف نقاط القسم – الفصل '+state.meta.term,header,classRows:ranked.map(r=>({rank:r.rank,name:r.name,activity:val(r.activity),test:val(r.test),exam:val(r.exam),avg:val(r.avg)}))});
  }catch(e){alert('تعذر إنشاء كشف PDF: '+e.message)}};
 const REMINDER_KEY='zad_backup_reminder_at';
 function backupReminderUpdate(){const last=Number(localStorage.getItem(REMINDER_KEY)||0),days=last?Math.floor((Date.now()-last)/86400000):null;const box=$('backupReminderStatus');if(box)box.textContent=last?'آخر نسخة احتياطية: منذ '+days+' يوم':'لم تُسجّل نسخة احتياطية بعد';if((days===null||days>=7)&&state.students.length){const status=$('saveStatus');if(status)status.textContent='⚠ يُنصح بتنزيل نسخة احتياطية'}}
